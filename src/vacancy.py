@@ -1,74 +1,56 @@
 from src.hh import HeadHunterAPI
+from src.json_class import JsonFile
+from src.salary_conversion import SalaryConversion
+from src.superjob import SuperJobAPI
 
 
-class VacancyHH:
+class Vacancy:
     new_vacancies = []
 
-    def __init__(self, service, company_name, vacancy_name, schedule, salary, experience):
-        self.service = service
-        self.hh = HeadHunterAPI()
-        self.all_vacancies = self.hh.all_vacancies()
-
+    def __init__(self, company_name, vacancy_name, address, salary):
         self.company_name = company_name
         self.vacancy_name = vacancy_name
+        self.address = address
         self.salary = salary
-        self.schedule = schedule
-        self.experience = experience
+        self.hh_all_vacancies = HeadHunterAPI().all_vacancies()
+        self.sj_all_vacancies = SuperJobAPI().all_vacancies()
 
-    def create_vacancy(self):
+    def add_vacancy(self):
         vac = {
+            'company': self.company_name,
             'name': self.vacancy_name,
+            'address': self.address,
             'salary': self.salary,
-            'schedule': self.schedule,
-            'experience': self.experience,
-            'employer': {'name': self.company_name}
         }
-        VacancyHH.new_vacancies.append(vac)
-        return VacancyHH.new_vacancies
+        JsonFile().write_json(vac, 'new_vacancies.json')
+        return f"Вакансия записана в файл с новыми вакансиями - new_vacancies.json"
 
-    @staticmethod
-    def change_vacancy(vid, key, value):
-        vac = VacancyHH.new_vacancies[vid]
-        vac[key] = value
-        return VacancyHH.new_vacancies
+    def get_vacancies_by_salary(self, first_value, second_value):
+        result = []
+        self.hh_all_vacancies = SalaryConversion().rur_currency()
+        self.sj_all_vacancies = SuperJobAPI().all_vacancies()
+
+        for i in self.hh_all_vacancies:
+            if i['salary']:
+                if i['salary']['from'] <= first_value:
+                    if i['salary']['to'] <= second_value:
+                        result.append(i)
+
+        for i in self.sj_all_vacancies:
+            if i['payment_from'] <= first_value:
+                if i['payment_to'] <= second_value:
+                    result.append(i)
+
+        JsonFile().write_json(result, 'new_vacancies.json')
+        return f'Результат по Вашему запросу записан в файл new_vacancies.json'
 
     @staticmethod
     def delete_vacancy(vid):
-        all_vac = VacancyHH.new_vacancies
-        all_vac.pop(vid)
-        return "Вакансия была удалена"
+        data = JsonFile().load_json('new_vacancies.json')
+        if 0 <= vid < len(data):
+            del data[0][vid]
+            JsonFile.write_json(data, 'new_vacancies.json')
+        else:
+            print('Элемента с таким индексом нет в списке')
+        return 'Вакансия удалена'
 
-
-class VacancySJ:
-    def __init__(self, service, company_name, vacancy_name, payment_from, payment_to, experience):
-        self.service = service
-        self.hh = HeadHunterAPI()
-        self.all_vacancies = self.hh.all_vacancies()
-
-        self.company_name = company_name
-        self.vacancy_name = vacancy_name
-        self.payment_from = payment_from
-        self.payment_to = payment_to
-        self.experience = experience
-
-    def create_vacancy(self):
-        vac = {
-            'name': self.vacancy_name,
-            'salary': {'payment_from': self.payment_from,
-                       'payment_to': self.payment_to},
-            'experience': self.experience,
-            'firm_name': self.company_name
-        }
-        return self.all_vacancies.append(vac)
-
-    def change_vacancy(self, vid, key, value):
-        vac = self.all_vacancies[vid]
-        vac[key] = value
-
-        return "Вакансия была изменена"
-
-    def delete_vacancy(self, vid):
-        all_vac = self.all_vacancies
-        all_vac.pop(vid)
-
-        return "Вакансия была изменена"

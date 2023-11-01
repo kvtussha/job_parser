@@ -28,8 +28,16 @@ class HeadHunterAPI(Job):
         else:
             return "Результатов не найдено"
 
+
 # hh_api = HeadHunterAPI()
-# print(hh_api.all_vacancies())
+# pprint(hh_api.all_vacancies())
+# count = 0
+# print(len(hh_api.all_vacancies()))
+# for i in hh_api.all_vacancies():
+#     if i['salary']:
+#         print(i['salary'])
+#
+# print(count)
 
 
 # hh_api = HeadHunterAPI()

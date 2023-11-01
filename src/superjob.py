@@ -34,3 +34,5 @@ class SuperJobAPI(Job):
 
 # sj = SuperJobAPI()
 # pprint(sj.get_vacancies('продавец'))
+# for i in sj.all_vacancies():
+#     print(f"{i['payment_from']}-{i['payment_to']}")
