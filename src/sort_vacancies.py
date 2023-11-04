@@ -1,3 +1,5 @@
+import json
+
 import requests
 
 from settings.implemented import headers
@@ -12,7 +14,7 @@ class SortVacancies:
         self.hh_all_vacancies = SalaryConversion().rur_currency()
 
     @staticmethod
-    def filter_vacancies(hh_vacancies, superjob_vacancies, filter_words):
+    def filter_vacancies(hh_vacancies: list, superjob_vacancies: list, filter_words: list) -> list:
         _response_hh = requests.get(f'https://api.superjob.ru/2.0/vacancies/?keywords={filter_words}', headers=headers)
         response = _response_hh.text
 
@@ -24,6 +26,6 @@ class SortVacancies:
         return result
 
     @staticmethod
-    def get_top_vacancies(info, top_num: int):
+    def get_top_vacancies(info: list, top_num: int) -> list:
         JsonFile.write_json(info[:top_num])
         return info[:top_num]

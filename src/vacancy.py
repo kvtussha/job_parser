@@ -25,10 +25,9 @@ class Vacancy:
         JsonFile().write_json(vac, 'new_vacancies.json')
         return f"Вакансия записана в файл с новыми вакансиями - new_vacancies.json"
 
-    def get_vacancies_by_salary(self, first_value, second_value):
-        result = []
+    def get_vacancies_by_salary_hh(self, first_value, second_value):
         self.hh_all_vacancies = SalaryConversion().rur_currency()
-        self.sj_all_vacancies = SuperJobAPI().all_vacancies()
+        result = []
 
         for i in self.hh_all_vacancies:
             if i['salary']:
@@ -36,19 +35,26 @@ class Vacancy:
                     if i['salary']['to'] <= second_value:
                         result.append(i)
 
+        JsonFile().write_json(result, 'search_result.json')
+        return f'Результат по Вашему запросу записан в файл search_result.json'
+
+    def get_vacancies_by_salary_sj(self, first_value, second_value):
+        self.sj_all_vacancies = SuperJobAPI().all_vacancies()
+        result = []
+
         for i in self.sj_all_vacancies:
             if i['payment_from'] <= first_value:
                 if i['payment_to'] <= second_value:
                     result.append(i)
 
-        JsonFile().write_json(result, 'new_vacancies.json')
-        return f'Результат по Вашему запросу записан в файл new_vacancies.json'
+        JsonFile().write_json(result, 'search_result.json')
+        return f'Результат по Вашему запросу записан в файл search_result.json'
 
     @staticmethod
     def delete_vacancy(vid):
         data = JsonFile().load_json('new_vacancies.json')
         if 0 <= vid < len(data):
-            del data[0][vid]
+            del data[vid]
             JsonFile.write_json(data, 'new_vacancies.json')
         else:
             print('Элемента с таким индексом нет в списке')

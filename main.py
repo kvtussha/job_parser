@@ -6,22 +6,32 @@ from src.sort_vacancies import SortVacancies
 from src.superjob import SuperJobAPI
 from src.vacancy import Vacancy
 
+# Creating instances of service classes
 hh_api = HeadHunterAPI()
 superjob_api = SuperJobAPI()
 
 # Getting job vacancies from different platforms
-hh_vacancies = hh_api.get_vacancies("Менеджер")
-superjob_vacancies = superjob_api.get_vacancies("Полицейский")
+hh_vacancies = hh_api.get_vacancies("Курьер")
+superjob_vacancies = superjob_api.get_vacancies("Продавец")
 
 # Creating a class instance to work with vacancies
-vacancy = Vacancy("Сбербанк", "Python Developer", "г.Москва, ул. Садовая, д.3", "100 000-150 000 руб.")
+vacancy1 = Vacancy("Сбербанк", "Python Developer", "г.Москва, ул. Садовая, д.3", "100 000-150 000 руб.")
+vacancy2 = Vacancy("Яндекс", "Java Developer", "г.Москва, ул. Ленинградская, д.5", "89 000-91 000 руб.")
+vacancy3 = Vacancy("VK", "JavaScript Developer", "г.Москва, ул. Узбекистанская, д.8", "140 000-172 000 руб.")
 
 # Saving information about vacancies to a file
 json_saver = JsonFile()
-vacancy.add_vacancy()
-vacancy.get_vacancies_by_salary(30000, 45000)
-vacancy.delete_vacancy(0)
-#
+
+# Creating new vacancies
+vacancy1.add_vacancy()
+vacancy2.add_vacancy()
+vacancy3.add_vacancy()
+
+# Getting vacancies by salary
+vacancy2.get_vacancies_by_salary_hh(30000, 100000)
+vacancy1.delete_vacancy(0)
+
+# Create instance of class SortVacancies
 sort_vacancies = SortVacancies()
 
 
