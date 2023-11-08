@@ -25,11 +25,12 @@ class Vacancy:
         JsonFile().write_json(vac, 'new_vacancies.json')
         return f"Вакансия записана в файл с новыми вакансиями - new_vacancies.json"
 
-    def get_vacancies_by_salary_hh(self, first_value, second_value):
-        self.hh_all_vacancies = SalaryConversion().rur_currency()
+    @staticmethod
+    def get_vacancies_by_salary_hh(first_value, second_value):
+        hh_all_vacancies = SalaryConversion().rur_currency()
         result = []
 
-        for i in self.hh_all_vacancies:
+        for i in hh_all_vacancies:
             if i['salary']:
                 if i['salary']['from'] <= first_value:
                     if i['salary']['to'] <= second_value:
@@ -38,11 +39,12 @@ class Vacancy:
         JsonFile().write_json(result, 'search_result.json')
         return f'Результат по Вашему запросу записан в файл search_result.json'
 
-    def get_vacancies_by_salary_sj(self, first_value, second_value):
-        self.sj_all_vacancies = SuperJobAPI().all_vacancies()
+    @staticmethod
+    def get_vacancies_by_salary_sj(first_value, second_value):
+        sj_all_vacancies = SuperJobAPI().all_vacancies()
         result = []
 
-        for i in self.sj_all_vacancies:
+        for i in sj_all_vacancies:
             if i['payment_from'] <= first_value:
                 if i['payment_to'] <= second_value:
                     result.append(i)

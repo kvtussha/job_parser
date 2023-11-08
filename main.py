@@ -9,47 +9,80 @@ from src.vacancy import Vacancy
 # Creating instances of service classes
 hh_api = HeadHunterAPI()
 superjob_api = SuperJobAPI()
-
-# Getting job vacancies from different platforms
-hh_vacancies = hh_api.get_vacancies("Курьер")
-superjob_vacancies = superjob_api.get_vacancies("Продавец")
-
-# Creating a class instance to work with vacancies
-vacancy1 = Vacancy("Сбербанк", "Python Developer", "г.Москва, ул. Садовая, д.3", "100 000-150 000 руб.")
-vacancy2 = Vacancy("Яндекс", "Java Developer", "г.Москва, ул. Ленинградская, д.5", "89 000-91 000 руб.")
-vacancy3 = Vacancy("VK", "JavaScript Developer", "г.Москва, ул. Узбекистанская, д.8", "140 000-172 000 руб.")
-
-# Saving information about vacancies to a file
-json_saver = JsonFile()
-
-# Creating new vacancies
-vacancy1.add_vacancy()
-vacancy2.add_vacancy()
-vacancy3.add_vacancy()
-
-# Getting vacancies by salary
-vacancy2.get_vacancies_by_salary_hh(30000, 100000)
-vacancy1.delete_vacancy(0)
-
-# Create instance of class SortVacancies
 sort_vacancies = SortVacancies()
 
 
 # Function to interact with the user
 def user_interaction():
     platforms = ["HeadHunter", "SuperJob"]
-    search_query = input("Enter a search query: ")
-    top_n = int(input("Enter the number of vacancies to display in top N: "))
-    filter_words = input("Enter keywords to filter vacancies: ").split()
-    filtered_vacancies = sort_vacancies.filter_vacancies(hh_vacancies, superjob_vacancies, filter_words)
-    # print(filtered_vacancies)
 
-    if not filtered_vacancies:
-        print("Vacancies matching the selected criteria are not found.")
-        return
+    while True:
+        role = input('Здравствуйте! Выберите цифру:\n'
+                     '1. Я работадатель\n'
+                     '2. Я ищу работу\n'
+                     '3. Выход')
+        platform = input('Введите платформу: HeadHunter или SuperJob')
+        if platform not in platforms:
+            print('Вы ошиблись с вводом')
+            break
+        top_n = int(input("Введите число топ-N вакансий, которые хотите получать: "))
 
-    top_vacancies = sort_vacancies.get_top_vacancies(filtered_vacancies, top_n)
-    # print_vacancies(top_vacancies)
+        if role == '1':
+            action = input('Выберите цифру:\n'
+                           '1. Я хочу создать вакансию\n'
+                           '2. Я хочу удалить вакансию\n')
+            if action == '1':
+                company_name = input('Введите название компании')
+                post = input('Введите название должности')
+                address = input('Введите адрес')
+                salary = input('Введите зарплату в таком формате: "100 000-150 000 руб."')
+
+                vacancy = Vacancy(company_name, post, address, salary)
+                print(vacancy.add_vacancy())
+            elif action == '2':
+                data = JsonFile.load_json('new_vacancies.json')
+                vid = int(input(f'Введите индекс вакансии, которую хотите удалить: от 0 до {len(data) - 1}'))
+                print(Vacancy.delete_vacancy(vid))
+            else:
+                print('Возможно, вы ошиблись в вводе. Попробуйте еще раз')
+        elif role == '2':
+            action = input('Выберите цифру:\n'
+                           '1. Я хочу получить вакансии по ключевому слову\n'
+                           '2. Я хочу получить вакансии по зарплате\n'
+                           '3. Я хочу получить вакансии и по ключевому слову, и по зарплате\n')
+            if action == '1':
+                key_words = input('Введите ключевые слова').split()
+                info = sort_vacancies.filter_vacancies(key_words)
+                top_vacancies = sort_vacancies.get_top_vacancies(info, top_n)
+                print(top_vacancies)
+            elif action == '2':
+                first_salary = int(input('Введите нижний порог зарплаты'))
+                second_salary = int(input('Введите верхний порог зарплаты'))
+                if platform == 'HeadHunter':
+                    info = Vacancy.get_vacancies_by_salary_hh(first_salary, second_salary)
+                    top_vacancies = sort_vacancies.get_top_vacancies(info, top_n)
+                    print(top_vacancies)
+                elif platform == 'SuperJob':
+                    info = Vacancy.get_vacancies_by_salary_sj(first_salary, second_salary)
+                    top_vacancies = sort_vacancies.get_top_vacancies(info, top_n)
+                    print(top_vacancies)
+            elif action == '3':
+                key_words = input('Введите ключевые слова').split()
+                sort_vacancies.filter_vacancies(key_words)
+                first_salary = int(input('Введите нижний порог зарплаты'))
+                second_salary = int(input('Введите верхний порог зарплаты'))
+                if platform == 'HeadHunter':
+                    info = Vacancy.get_vacancies_by_salary_hh(first_salary, second_salary)
+                    top_vacancies = sort_vacancies.get_top_vacancies(info, top_n)
+                    print(top_vacancies)
+                elif platform == 'SuperJob':
+                    info = Vacancy.get_vacancies_by_salary_sj(first_salary, second_salary)
+                    top_vacancies = sort_vacancies.get_top_vacancies(info, top_n)
+                    print(top_vacancies)
+        elif role == '3':
+            break
+        else:
+            print('Возможно, Вы ошиблись с вводом')
 
 
 if __name__ == "__main__":

@@ -14,18 +14,14 @@ class SortVacancies:
         self.hh_all_vacancies = SalaryConversion().rur_currency()
 
     @staticmethod
-    def filter_vacancies(hh_vacancies: list, superjob_vacancies: list, filter_words: list) -> list:
+    def filter_vacancies(filter_words: list) -> list:
         _response_hh = requests.get(f'https://api.superjob.ru/2.0/vacancies/?keywords={filter_words}', headers=headers)
         response = _response_hh.text
 
         result = []
-        result.extend(hh_vacancies)
-        result.extend(superjob_vacancies)
         result.extend(response)
-        JsonFile.write_json(result)
-        return result
+        return JsonFile.write_json(result)
 
     @staticmethod
     def get_top_vacancies(info: list, top_num: int) -> list:
-        JsonFile.write_json(info[:top_num])
-        return info[:top_num]
+        return JsonFile.write_json(info[:top_num])
