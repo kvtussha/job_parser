@@ -14,7 +14,9 @@ class SuperJobAPI(Job):
 
     def all_vacancies(self) -> list:
         """Получение всей информации о вакансиях"""
-        return json.loads(self.response)['objects']
+        info = json.loads(self.response)['objects']
+        JsonFile.create_json(info, 'sj_vacancies.json')
+        return info
 
     def get_vacancies(self, title: str) -> list | str:
         """Получение информации о вакансии по названию специальности"""
@@ -35,6 +37,6 @@ class SuperJobAPI(Job):
 
 
 # sj = SuperJobAPI()
-# print(sj.get_vacancies('продавец'))
+# print(sj.all_vacancies())
 # for i in sj.all_vacancies():
 #     print(i['profession'])

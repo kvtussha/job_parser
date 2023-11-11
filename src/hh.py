@@ -11,11 +11,11 @@ class HeadHunterAPI(Job):
         self._response_hh = requests.get('https://api.hh.ru/vacancies')
         self._response = self._response_hh.text
 
-    def all_vacancies(self) -> list:
+    def all_vacancies(self):
         """Получение всей информации о вакансиях"""
         return json.loads(self._response)['items']
 
-    def get_vacancies(self, title: str) -> list | str:
+    def get_vacancies(self, title):
         """Получение информации о вакансии по названию специальности"""
         vacancies = self.all_vacancies()
         need_results = []
@@ -24,16 +24,13 @@ class HeadHunterAPI(Job):
                 need_results.append(item)
 
         if need_results:
-            JsonFile().write_json(need_results, 'search_result.json')
             return need_results
         else:
             return "Результатов не найдено"
-
 
 # hh_api = HeadHunterAPI()
 # print(hh_api.all_vacancies())
 
 
 # hh_api = HeadHunterAPI()
-# hh_vacancies = hh_api.get_vacancies("Курьер")
-# print(type(hh_vacancies))
+# print(hh_api.get_vacancies("Водитель"))

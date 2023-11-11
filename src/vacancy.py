@@ -6,24 +6,30 @@ from src.superjob import SuperJobAPI
 
 class Vacancy:
     new_vacancies = []
+    hh_all_vacancies = HeadHunterAPI().all_vacancies()
+    sj_all_vacancies = SuperJobAPI().all_vacancies()
 
     def __init__(self, company_name, vacancy_name, address, salary):
         self.company_name = company_name
         self.vacancy_name = vacancy_name
         self.address = address
         self.salary = salary
-        self.hh_all_vacancies = HeadHunterAPI().all_vacancies()
-        self.sj_all_vacancies = SuperJobAPI().all_vacancies()
 
-    def add_vacancy(self):
+    def add_vacancy(self, platform):
         vac = {
             'company': self.company_name,
             'name': self.vacancy_name,
             'address': self.address,
             'salary': self.salary,
         }
-        JsonFile().write_json(vac, 'new_vacancies.json')
-        return f"Вакансия записана в файл с новыми вакансиями - new_vacancies.json"
+        if platform == 'HeadHunter':
+            Vacancy.hh_all_vacancies.append(vac)
+            print(Vacancy.hh_all_vacancies[-1])
+        elif platform == 'SuperJob':
+            Vacancy.sj_all_vacancies.append(vac)
+            print(Vacancy.sj_all_vacancies[-1])
+        print('Вакансия добавлена')
+        return vac
 
     @staticmethod
     def get_vacancies_by_salary_hh(first_value, second_value):
@@ -37,7 +43,8 @@ class Vacancy:
                         result.append(i)
 
         JsonFile().write_json(result, 'search_result.json')
-        return f'Результат по Вашему запросу записан в файл search_result.json'
+        print(f'Результат по Вашему запросу записан в файл search_result.json')
+        return result
 
     @staticmethod
     def get_vacancies_by_salary_sj(first_value, second_value):
@@ -50,15 +57,21 @@ class Vacancy:
                     result.append(i)
 
         JsonFile().write_json(result, 'search_result.json')
-        return f'Результат по Вашему запросу записан в файл search_result.json'
+        print(f'Результат по Вашему запросу записан в файл search_result.json')
+        return result
 
     @staticmethod
-    def delete_vacancy(vid):
-        data = JsonFile().load_json('new_vacancies.json')
-        if 0 <= vid < len(data):
-            del data[vid]
-            JsonFile.write_json(data, 'new_vacancies.json')
+    def delete_vacancy(platform, vid):
+        if platform == 'HeadHunter':
+            data = Vacancy.hh_all_vacancies
+        elif platform == 'SuperJob':
+            data = Vacancy.sj_all_vacancies
         else:
-            print('Элемента с таким индексом нет в списке')
-        return 'Вакансия удалена'
+            data = []
 
+        if data:
+            if 0 <= vid <= len(data):
+                del data[vid]
+            else:
+                print('Элемента с таким индексом нет в списке')
+        return 'Вакансия удалена'

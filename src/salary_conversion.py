@@ -1,12 +1,14 @@
+from pprint import pprint
+
 from src.hh import HeadHunterAPI
-from src.superjob import SuperJobAPI
+from src.json_class import JsonFile
 
 
 class SalaryConversion:
     """Класс для преобразования зарплаты в HH"""
+
     def __init__(self):
-        self._hh_api = HeadHunterAPI()
-        self._all_vacancies = self._hh_api.all_vacancies()
+        self._all_vacancies = HeadHunterAPI().all_vacancies()
         """{'currency': 'BYR', 'from': 2320, 'gross': True, 'to': 5320}"""
 
     def _zero_values_salaries(self):
@@ -44,6 +46,7 @@ class SalaryConversion:
                         salary_dict['currency'] = 'RUR'
         return self._all_vacancies
 
-# hh_api = SortVacanciesHH()
-# for i in hh_api.sort_by_salary:
+
+# s = SalaryConversion()
+# for i in s.rur_currency():
 #     print(i['salary'])
