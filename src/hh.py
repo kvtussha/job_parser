@@ -3,7 +3,6 @@ import json
 import requests
 
 from src.job import Job
-from src.json_class import JsonFile
 
 
 class HeadHunterAPI(Job):
@@ -28,8 +27,9 @@ class HeadHunterAPI(Job):
         else:
             return "Результатов не найдено"
 
+
 # hh_api = HeadHunterAPI()
-# print(hh_api.all_vacancies())
+# pprint(hh_api.all_vacancies())
 
 
 # hh_api = HeadHunterAPI()

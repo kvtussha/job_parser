@@ -1,4 +1,5 @@
 import json
+from pprint import pprint
 
 import requests
 
@@ -36,7 +37,5 @@ class SuperJobAPI(Job):
             return "Результатов не найдено"
 
 
-# sj = SuperJobAPI()
-# print(sj.all_vacancies())
-# for i in sj.all_vacancies():
-#     print(i['profession'])
+sj = SuperJobAPI()
+pprint(sj.all_vacancies())
