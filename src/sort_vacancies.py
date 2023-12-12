@@ -1,11 +1,8 @@
-import json
-
 import requests
 
 from settings.implemented import headers
 from src.json_class import JsonFile
 from src.salary_conversion import SalaryConversion
-from src.superjob import SuperJobAPI
 
 
 class SortVacancies:
@@ -27,5 +24,3 @@ class SortVacancies:
     def get_top_vacancies(info: list, top_num: int) -> list:
         JsonFile.write_json(info[:top_num])
         return info[:top_num]
-
-

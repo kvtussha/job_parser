@@ -1,5 +1,4 @@
 import json
-from pprint import pprint
 
 import requests
 
@@ -13,15 +12,15 @@ class SuperJobAPI(Job):
         self._auth = requests.get('https://api.superjob.ru/2.0/vacancies/', headers=headers)
         self.response = self._auth.text
 
-    def all_vacancies(self) -> list:
+    def get_all_vacancies(self) -> list:
         """Получение всей информации о вакансиях"""
         info = json.loads(self.response)['objects']
         JsonFile.create_json(info, 'sj_vacancies.json')
         return info
 
-    def get_vacancies(self, title: str) -> list | str:
+    def vacancies_by_profession(self, title: str) -> list | str:
         """Получение информации о вакансии по названию специальности"""
-        vacancies = self.all_vacancies()
+        vacancies = self.get_all_vacancies()
         need_results = []
         for item in vacancies:
             vacancy_name = item['profession'].lower()
@@ -35,7 +34,3 @@ class SuperJobAPI(Job):
             return need_results
         else:
             return "Результатов не найдено"
-
-
-sj = SuperJobAPI()
-pprint(sj.all_vacancies())

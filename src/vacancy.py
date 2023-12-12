@@ -6,7 +6,7 @@ from src.superjob import SuperJobAPI
 
 class Vacancy:
     new_vacancies = []
-    hh_all_vacancies = HeadHunterAPI().all_vacancies()
+    hh_all_vacancies = HeadHunterAPI().get_all_vacancies()
     sj_all_vacancies = SuperJobAPI().all_vacancies()
 
     def __init__(self, company_name, vacancy_name, address, salary):
