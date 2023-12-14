@@ -1,44 +1,72 @@
-from src.hh import HeadHunterAPI
+import requests
+
+from settings.implemented import API_KEY
 
 
 class SalaryConversion:
-    """Класс для преобразования зарплаты в HH"""
+    """
+            The class converts currencies using the apilayer.
+            Methods:
+                _check_salary_dict: The method checks the value in the dictionary for existence, if it does not exist,
+                    it replaces it with 0. If there is no dictionary, it creates a new one with zero values
+                salary_value: replaces the Null value with 0, calculates the average salary,
+                    converts it to RUB if it is not already in rubles
+                salary_conversion: sends a request to the URL, receives a response,
+                    and we get the result from it
+            """
 
-    def __init__(self):
-        self._all_vacancies = HeadHunterAPI().get_all_vacancies()
-        """{'currency': 'BYR', 'from': 2320, 'gross': True, 'to': 5320}"""
+    @classmethod
+    def _check_salary_dict(cls, salary_dict: dict) -> dict:
+        """
+                Returns a dictionary converted for operation with some modified values
+                Param:
+                    salary_dict: dict, dictionary with all salary parameters
+                Return:
+                    dict: the converted dictionary
+                """
+        if salary_dict:
+            for i in salary_dict:
+                if salary_dict[i] is None:
+                    salary_dict[i] = 0
+        else:
+            salary_dict = {"from": 0, "to": 0, "currency": "RUR"}
+        return salary_dict
 
-    def _zero_values_salaries(self):
+    @classmethod
+    def salary_value(cls, salary_dict: dict) -> int:
+        """
+                The method returns the final beautiful salary value
+                Param:
+                    salary_dict: dict, dictionary with all salary parameters
+                Return:
+                    int, the final salary value
+                """
+        salary_dict = cls._check_salary_dict(salary_dict)
+        from_value = salary_dict.get('from')
+        to_value = salary_dict.get('to')
+        currency = salary_dict.get('currency')
 
-        """Значения None в словаре с заплатой заменяем на 0"""
-        for x in self._all_vacancies:
-            if x['salary']:
-                salary_dict = x['salary']
-                if salary_dict['from'] is None:
-                    salary_dict['from'] = 0
-                if salary_dict['to'] is None:
-                    salary_dict['to'] = 0
-        return self._all_vacancies
+        value = (from_value + to_value) // 2
+        if currency != 'RUR':
+            result = cls._salary_conversion(currency, value)
+            return result
+        return value
 
-    def rur_currency(self):
-        """Переводим валюту в RUR"""
-        currency = {
-            'KZT': 0.2,
-            'BYR': 28.35,
-            'UZS': 0.0077,
-            'KGS': 1.05,
-            'USD': 93.55
-        }
-        self._all_vacancies = self._zero_values_salaries()
+    @staticmethod
+    def _salary_conversion(from_value: str, amount: int, to_value='RUB') -> int:
+        """
+                Converts currencies according to the updated values
 
-        for x in self._all_vacancies:
-            if x['salary']:
-                salary_dict = x['salary']
-                if salary_dict:
-                    if salary_dict['currency'] != 'RUR':
-                        if salary_dict['from']:
-                            salary_dict['from'] = currency[salary_dict['currency']] * salary_dict['from']
-                        if salary_dict['to']:
-                            salary_dict['to'] = currency[salary_dict['currency']] * salary_dict['to']
-                        salary_dict['currency'] = 'RUR'
-        return self._all_vacancies
+                Params:
+                    from_value: str, the name of the currency to convert from
+                    to_value: str, the name of the currency to convert to
+                    amount: int, the amount to be converted to another value
+
+                Return:
+                    int, converted value
+                """
+        url = f"https://api.apilayer.com/exchangerates_data/convert?to={to_value}&from={from_value}&amount={amount}"
+        payload = {}
+        headers = {"apikey": API_KEY}
+        response = requests.request("GET", url, headers=headers, data=payload)
+        return round(response.json()['result'])

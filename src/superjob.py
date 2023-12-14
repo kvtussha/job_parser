@@ -13,24 +13,29 @@ class SuperJobAPI(Job):
         self.response = self._auth.text
 
     def get_all_vacancies(self) -> list:
-        """Получение всей информации о вакансиях"""
-        info = json.loads(self.response)['objects']
-        JsonFile.create_json(info, 'sj_vacancies.json')
-        return info
+        """
+                Get all the vacancies, with full information about each one.
+                Return:
+                     list: a list containing dictionaries with information about
+                     for each vacancy.
+                """
+        return json.loads(self.response)['objects']
 
     def vacancies_by_profession(self, title: str) -> list | str:
-        """Получение информации о вакансии по названию специальности"""
+        """
+                Get vacancies by the name of the specialty.
+                Param:
+                    title: str, the name of the specialty from the user
+                Return:
+                    list: if there are vacancies with this specialty name, you will receive them
+                    str: if there are no vacancies with this specialty name, you will receive
+                    a phrase with an apology
+                """
         vacancies = self.get_all_vacancies()
-        need_results = []
-        for item in vacancies:
-            vacancy_name = item['profession'].lower()
-            title = title.lower()
-
-            if title in vacancy_name:
-                need_results.append(item)
+        need_results = [item for item in vacancies if title.lower() in item['profession'].lower()]
 
         if need_results:
             JsonFile().write_json(need_results, 'search_result.json')
             return need_results
         else:
-            return "Результатов не найдено"
+            return "No results found"

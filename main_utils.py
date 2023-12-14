@@ -1,88 +1,86 @@
-from src.hh import HeadHunterAPI
-from src.json_class import JsonFile
+from settings.implemented import hh_all_vacancies, sj_all_vacancies
 from src.sort_vacancies import SortVacancies
-from src.superjob import SuperJobAPI
-from src.vacancy import Vacancy
+from src.vacancy import VacancyHH, VacancySJ
 
-# Creating instances of service classes
-hh_api = HeadHunterAPI()
-superjob_api = SuperJobAPI()
 sort_vacancies = SortVacancies()
 
 
-def employer(platform):
-    """Функция работы с работодателем"""
-    action = input('Выберите цифру:\n'
-                   '1. Я хочу создать вакансию\n'
-                   '2. Я хочу удалить вакансию\n')
-    if action == '1':
+class UserFunctions:
+    platform = input('Введите платформу: HeadHunter или SuperJob\n')
+    action_emp = input('Выберите цифру:\n'
+                       '1. Я хочу создать вакансию\n'
+                       '2. Я хочу удалить вакансию\n')
+    action_cl = input('Выберите цифру:\n'
+                      '1. Я хочу получить вакансии по ключевому слову\n'
+                      '2. Я хочу получить вакансии по зарплате\n'
+                      '3. Я хочу получить вакансии и по ключевому слову, и по зарплате\n')
+    key_words = input('Введите ключевые слова\n').split()
+    first_salary = int(input('Введите нижний порог зарплаты\n'))
+    second_salary = int(input('Введите верхний порог зарплаты\n'))
+    top_n = int(input("Введите число топ-N вакансий, которые хотите получать: \n"))
+
+    @classmethod
+    def __employer_info(cls):
         company_name = input('Введите название компании\n')
         post = input('Введите название должности\n')
         address = input('Введите адрес\n')
         salary = input('Введите зарплату в таком формате: "100 000-150 000 руб."\n')
 
-        vacancy = Vacancy(company_name, post, address, salary)
-        return vacancy.add_vacancy(platform)
-    elif action == '2':
-        data = hh_api.all_vacancies()
-        vid = int(input(f'Введите индекс вакансии, которую хотите удалить: от 0 до {len(data) - 2}\n'))
-        return Vacancy.delete_vacancy(vid, platform)
-    else:
-        return 'Возможно, вы ошиблись в вводе. Попробуйте еще раз\n'
+        return [cls.platform, company_name, post, address, salary]
 
+    @classmethod
+    def employer_create_vac(cls):
+        """Функция работы с работодателем"""
+        if cls.platform == 'HeadHunter':
+            vacancy = VacancyHH(cls.__employer_info()[1], cls.__employer_info()[2],
+                                cls.__employer_info()[3], cls.__employer_info()[4])
+            return vacancy.add_vacancy()
+        elif cls.platform == 'SuperJob':
+            vacancy = VacancySJ(cls.__employer_info()[1], cls.__employer_info()[2],
+                                cls.__employer_info()[3], cls.__employer_info()[4])
+            return vacancy.add_vacancy()
+        else:
+            print("Извините, произошла ошибка")
 
-def seek_employment(platform, top_n):
-    """Функция работы с соискателем"""
-    action = input('Выберите цифру:\n'
-                   '1. Я хочу получить вакансии по ключевому слову\n'
-                   '2. Я хочу получить вакансии по зарплате\n'
-                   '3. Я хочу получить вакансии и по ключевому слову, и по зарплате\n')
-    if action == '1':
+    @classmethod
+    def employer_del_vac(cls):
+        vac_list = []
+
+        if cls.platform == 'HeadHunter':
+            vac_list = hh_all_vacancies
+        elif cls.platform == 'SuperJob':
+            vac_list = sj_all_vacancies
+        else:
+            print("Извините, произошла ошибка")
+
+        if vac_list:
+            vid = int(
+                input(f'Введите индекс вакансии, которую хотите удалить: '
+                      f'от 0 до {len(vac_list) - 2}\n'))
+            return VacancyHH.delete_vacancy(vid)
+
+    @classmethod
+    def key_sort(cls):
         print('Внимание! Сортировка по ключевому слову доступна лишь на платформе SuperJob')
-        if platform == 'SuperJob':
-            return getting_by_keyword(top_n)
+        if cls.platform == 'SuperJob':
+            res = SortVacancies().key_filter_vacancies(cls.key_words)
+            return SortVacancies.get_top_vacancies(res, cls.top_n)
         else:
             print('Извините, название платформы указано неверно. Попробуйте еще раз')
-    elif action == '2':
-        return getting_salary(platform, top_n)
-    elif action == '3':
-        return keyword_salary(platform, top_n)
 
+    @classmethod
+    def salary_sort(cls):
+        res = []
+        if cls.platform == 'HeadHunter':
+            res = VacancyHH.get_vacancies_by_salary(cls.first_salary, cls.second_salary)
+        elif cls.platform == 'SuperJob':
+            res = VacancySJ.get_vacancies_by_salary(cls.first_salary, cls.second_salary)
+        return SortVacancies.get_top_vacancies(res, cls.top_n)
 
-def getting_by_keyword(top_n: int):
-    key_words = input('Введите ключевые слова\n').split()
-    info = sort_vacancies.filter_vacancies(key_words)
-    top_vacancies = sort_vacancies.get_top_vacancies(info, top_n)
-    return top_vacancies
-
-
-def getting_salary(platform: str, top_n: int):
-    first_salary = int(input('Введите нижний порог зарплаты\n'))
-    second_salary = int(input('Введите верхний порог зарплаты\n'))
-    if platform == 'HeadHunter':
-        info = Vacancy.get_vacancies_by_salary_hh(first_salary, second_salary)
-        top_vacancies = sort_vacancies.get_top_vacancies(info, top_n)
-        print(top_vacancies)
-    elif platform == 'SuperJob':
-        info = Vacancy.get_vacancies_by_salary_sj(first_salary, second_salary)
-        top_vacancies = sort_vacancies.get_top_vacancies(info, top_n)
-        print(top_vacancies)
-
-
-def keyword_salary(platform: str, top_n: int):
-    key_words = input('Введите ключевые слова\n').split()
-    res1 = sort_vacancies.filter_vacancies(key_words)
-    getting_salary(platform, top_n)
-
-
-def comparison_vacancies(res1, res2):
-    end_result = []
-    if len(res1) <= len(res2):
-        for item in res1:
-            if item in res2:
-                end_result.append(item)
-    elif len(res2) <= len(res1):
-        for item in res2:
-            if item in res1:
-                end_result.append(item)
-    return end_result
+    @classmethod
+    def salary_keyword_sort(cls):
+        res = []
+        for i in cls.key_sort():
+            if i in cls.salary_sort():
+                res.append(i)
+        return SortVacancies.get_top_vacancies(res, cls.top_n)

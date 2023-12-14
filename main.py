@@ -1,4 +1,6 @@
-from main_utils import employer, seek_employment
+from main_utils import UserFunctions
+
+user_func = UserFunctions()
 
 
 # Function to interact with the user
@@ -9,16 +11,24 @@ def user_interaction():
                  '1. Я работадатель\n'
                  '2. Я ищу работу\n')
     platform = input('Введите платформу: HeadHunter или SuperJob\n')
-    if role == '2':
-        top_n = int(input("Введите число топ-N вакансий, которые хотите получать: \n"))
 
     if platform not in platforms:
         print('Вы ошиблись с вводом')
 
     if role == '1':
-        print(employer(platform))
+        if platform == platforms[0]:
+            if user_func.action_emp == '1':
+                user_func.employer_create_vac()
+            elif user_func.action_emp == '2':
+                user_func.employer_del_vac()
     elif role == '2':
-        print(seek_employment(platform, top_n))
+        if UserFunctions.action_cl == '1':
+            res = user_func.key_sort()
+        elif UserFunctions.action_cl == '2':
+            res = user_func.salary_sort()
+        elif UserFunctions.action_cl == '3':
+            res = user_func.salary_keyword_sort()
+        return res
     else:
         print('Возможно, Вы ошиблись с вводом\n')
 
