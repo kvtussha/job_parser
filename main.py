@@ -1,4 +1,4 @@
-from src.main_utils import UserFunctions, platform
+from src.user_functions import UserFunctions, platform
 
 user_func = UserFunctions()
 

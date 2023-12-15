@@ -12,9 +12,24 @@ platform = input('Введите платформу: HeadHunter или SuperJob\
 
 
 class UserFunctions:
+    """
+    A class that prepares information before being output to the user
+    Methods:
+        __employer_info: create a list with information about a new job
+        employer_create_vac: create new vacancies
+        employer_del_vac: delete vacancies
+        key_sort: sort by keywords
+        salary_sort: sort by salary
+        salary_keyword_sort: sort be keyword and salary
+    """
 
     @classmethod
-    def __employer_info(cls):
+    def __employer_info(cls) -> list:
+        """
+        Creates a list with information about a new job
+        Return:
+            list with information
+        """
         company_name = input('Введите название компании\n')
         post = input('Введите название должности\n')
         address = input('Введите адрес\n')
@@ -22,8 +37,12 @@ class UserFunctions:
         return [platform, company_name, post, address, salary]
 
     @classmethod
-    def employer_create_vac(cls):
-        """Функция работы с работодателем"""
+    def employer_create_vac(cls) -> None:
+        """
+        Job creation function
+        Return:
+            None, if a vacancy has been created
+        """
         emp_list = cls.__employer_info()
         if platform == 'HeadHunter':
             vacancy = VacancyHH(emp_list[1], emp_list[2],
@@ -37,7 +56,12 @@ class UserFunctions:
             print("Извините, произошла ошибка")
 
     @classmethod
-    def employer_del_vac(cls):
+    def employer_del_vac(cls) -> None:
+        """
+        Job deletion function
+        Return:
+            None, if the vacancy has been deleted
+        """
         vac_list = []
 
         if platform == 'HeadHunter':
@@ -54,7 +78,12 @@ class UserFunctions:
             VacancyHH.delete_vacancy(vid)
 
     @classmethod
-    def key_sort(cls):
+    def key_sort(cls) -> list:
+        """
+        Sort by keywords
+        Return:
+            list with need vacancies
+        """
         print('Внимание! Сортировка по ключевому слову доступна лишь на платформе SuperJob, убедитесь, что Вы на '
               'правильной платформе')
         key_words = input('Введите ключевые слова\n').split()
@@ -67,7 +96,12 @@ class UserFunctions:
             print('Извините, название платформы указано неверно. Попробуйте еще раз')
 
     @classmethod
-    def salary_sort(cls):
+    def salary_sort(cls) -> list:
+        """
+        Sort by salary
+        Return:
+            list with need vacancies
+        """
         first_salary = int(input('Введите нижний порог зарплаты\n'))
         second_salary = int(input('Введите верхний порог зарплаты\n'))
         top_n = int(input("Введите число топ-N вакансий, которые хотите получать: \n"))
@@ -80,7 +114,12 @@ class UserFunctions:
         return SortVacancies.get_top_vacancies(res, top_n)
 
     @classmethod
-    def salary_keyword_sort(cls):
+    def salary_keyword_sort(cls) -> list:
+        """
+        Sort by keywords and salary
+        Return:
+            list with need vacancies
+        """
         top_n = int(input("Введите число топ-N вакансий, которые хотите получать: \n"))
         res = []
         for i in cls.key_sort():
