@@ -1,6 +1,6 @@
 import requests
 
-from settings.implemented import API_KEY
+from settings.implemented import ER_API_KEY
 
 
 class SalaryConversion:
@@ -67,6 +67,6 @@ class SalaryConversion:
                 """
         url = f"https://api.apilayer.com/exchangerates_data/convert?to={to_value}&from={from_value}&amount={amount}"
         payload = {}
-        headers = {"apikey": API_KEY}
+        headers = {"apikey": ER_API_KEY}
         response = requests.request("GET", url, headers=headers, data=payload)
         return round(response.json()['result'])

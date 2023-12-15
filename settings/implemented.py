@@ -2,16 +2,11 @@ import os
 
 from dotenv import load_dotenv
 
-from src.hh import HeadHunterAPI
-from src.superjob import SuperJobAPI
-
 load_dotenv()
-API_KEY = os.getenv('SECRET_API_KEY')
+SJ_API_KEY = os.getenv('SJ_API_KEY')
+ER_API_KEY = os.getenv('ER_API_KEY')
 
 headers = {'Host': 'api.superjob.ru',
-           'X-Api-App-Id': API_KEY,
-           'Authorisation': f'Bearer {API_KEY[3:]}',
+           'X-Api-App-Id': SJ_API_KEY,
+           'Authorisation': f'Bearer {SJ_API_KEY[3:]}',
            'Content-Type': 'application/x-www-form-urlencoded'}
-
-hh_all_vacancies = HeadHunterAPI().get_all_vacancies()
-sj_all_vacancies = SuperJobAPI().get_all_vacancies()

@@ -1,7 +1,10 @@
-
+from src.hh import HeadHunterAPI
 from src.json_class import JsonFile
 from src.salary_conversion import SalaryConversion
-from settings.implemented import hh_all_vacancies, sj_all_vacancies
+from src.superjob import SuperJobAPI
+
+hh_all_vacancies = HeadHunterAPI().get_all_vacancies()
+sj_all_vacancies = SuperJobAPI().get_all_vacancies()
 
 
 class VacancyHH:
@@ -56,7 +59,6 @@ class VacancyHH:
                         result.append(i)
 
         JsonFile().write_json(result)
-        print(f'Результат по Вашему запросу записан в файл search_result.json')
         return result
 
     @staticmethod
@@ -126,7 +128,6 @@ class VacancySJ:
                     result.append(i)
 
         JsonFile().write_json(result)
-        print(f'Результат по Вашему запросу записан в файл search_result.json')
         return result
 
     @staticmethod

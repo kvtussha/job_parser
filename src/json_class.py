@@ -14,6 +14,7 @@ class JsonFile:
                 """
         with open(filename, 'w', encoding='utf-8') as outfile:
             json.dump(info, outfile, indent=4, ensure_ascii=False)
+            print(f'Результат по Вашему запросу записан в файл {filename}')
 
     @staticmethod
     def load_json(filename: str) -> list:
