@@ -48,7 +48,7 @@ class HeadHunterAPI(Job):
         vacancies = self.get_all_vacancies()
         need_results = [item for item in vacancies if title.lower() in item['name'].lower()]
         if need_results:
-            JsonFile().write_json(need_results, 'search_result.json')
+            JsonFile().write_json(need_results)
             return need_results
         else:
             return "No results found"
